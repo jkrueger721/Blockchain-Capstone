@@ -22,11 +22,13 @@ contract Ownable {
     }
     //  4) fill out the transferOwnership function
     //  5) create an event that emits anytime ownerShip is transfered (including in the constructor)
-
+    event TransferOwnership(address oldOwner,address newOwner);
     function transferOwnership(address newOwner) public onlyOwner {
         // TODO add functionality to transfer control of the contract to a newOwner.
         // make sure the new owner is a real address
-
+        address origOwner = msg.sender;
+        require(newOwner != address(0));
+        emit TransferOwnership(origOwner, newOwner);
     }
 }
 
@@ -36,7 +38,26 @@ contract Ownable {
 //  3) create an internal constructor that sets the _paused variable to false
 //  4) create 'whenNotPaused' & 'paused' modifier that throws in the appropriate situation
 //  5) create a Paused & Unpaused event that emits the address that triggered the event
+contract Pausable is Ownable {
+    bool private _paused;
+   
+   modifier whenNotPaused(){
+       require(!_paused,"contract needs not to be paused");
+       _;
+   }
+   modifier paused(){
+       require(_paused,"contract needs to be paused");
+       _;
+   }
 
+    constructor  ()internal{
+       _paused = false;
+   }
+
+   event Paused(address caller);
+   event UnPause(address caller);
+
+}
 contract ERC165 {
     bytes4 private constant _INTERFACE_ID_ERC165 = 0x01ffc9a7;
     /*
