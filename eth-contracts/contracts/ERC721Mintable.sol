@@ -11,13 +11,16 @@ contract Ownable {
     //  1) create a private '_owner' variable of type address with a public getter function
     address private _owner;
     //  2) create an internal constructor that sets the _owner var to the creater of the contract 
+    function getOwner(){
+        return _owner;
+    }
     constructor(){
 
        _owner = msg.sender ;
     }
     //  3) create an 'onlyOwner'  modifier that throws if called by any account other than the owner.
     modifier onlyOwner(){
-        require(msg.send == _owner, "caller needs to be contract owner");
+        require(msg.sender == _owner, "caller needs to be contract owner");
         _;
     }
     //  4) fill out the transferOwnership function
@@ -149,10 +152,11 @@ contract ERC721 is Pausable, ERC165 {
 //    @dev Approves another address to transfer the given token ID
     function approve(address to, uint256 tokenId) public {
         address tokenOwner = _tokenOwner[tokenId];
+        address contractOwner = getOwner();
         // TODO require the given address to not be the owner of the tokenId
         require(tokenOwner != to);
         // TODO require the msg sender to be the owner of the contract or isApprovedForAll() to be true
-        require(msg.sender == _owner || isApprovedForAll(msg.sender));
+        require(msg.sender == contractOwner || isApprovedForAll(msg.sender));
         // TODO add 'to' address to token approvals
         _tokenApprovals.push(to);
         // TODO emit Approval Event
@@ -161,6 +165,7 @@ contract ERC721 is Pausable, ERC165 {
 
     function getApproved(uint256 tokenId) public view returns (address) {
         // TODO return token approval if it exists
+        return _tokenApprovals[tokenId];
     }
 
     /**
