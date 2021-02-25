@@ -40,7 +40,10 @@ contract Ownable {
 //  5) create a Paused & Unpaused event that emits the address that triggered the event
 contract Pausable is Ownable {
     bool private _paused;
-   
+    
+   function setPaused(bool mode)onlyOwner public{
+       _paused = mode;
+   }
    modifier whenNotPaused(){
        require(!_paused,"contract needs not to be paused");
        _;
@@ -135,23 +138,25 @@ contract ERC721 is Pausable, ERC165 {
     function balanceOf(address owner) public view returns (uint256) {
         // TODO return the token balance of given address
         // TIP: remember the functions to use for Counters. you can refresh yourself with the link above
+        return _ownedTokensCount[owner].current();
     }
 
     function ownerOf(uint256 tokenId) public view returns (address) {
         // TODO return the owner of the given tokenId
+        return _tokenOwner[tokenId];
     }
 
 //    @dev Approves another address to transfer the given token ID
     function approve(address to, uint256 tokenId) public {
-        
+        address tokenOwner = _tokenOwner[tokenId];
         // TODO require the given address to not be the owner of the tokenId
-
+        require(tokenOwner != to);
         // TODO require the msg sender to be the owner of the contract or isApprovedForAll() to be true
-
+        require(msg.sender == _owner || isApprovedForAll(msg.sender));
         // TODO add 'to' address to token approvals
-
+        _tokenApprovals.push(to);
         // TODO emit Approval Event
-
+        emit Approval(tokenOwner, to, tokenId);
     }
 
     function getApproved(uint256 tokenId) public view returns (address) {
