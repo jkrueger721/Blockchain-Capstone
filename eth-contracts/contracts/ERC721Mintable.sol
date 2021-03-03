@@ -11,11 +11,10 @@ contract Ownable {
     //  1) create a private '_owner' variable of type address with a public getter function
     address private _owner;
     //  2) create an internal constructor that sets the _owner var to the creater of the contract 
-    function getOwner(){
+    function getOwner()public returns(address){
         return _owner;
     }
-    constructor(){
-
+    constructor() internal{
        _owner = msg.sender ;
     }
     //  3) create an 'onlyOwner'  modifier that throws if called by any account other than the owner.
@@ -156,7 +155,8 @@ contract ERC721 is Pausable, ERC165 {
         // TODO require the given address to not be the owner of the tokenId
         require(tokenOwner != to);
         // TODO require the msg sender to be the owner of the contract or isApprovedForAll() to be true
-        require(msg.sender == contractOwner || isApprovedForAll(msg.sender));
+        require(msg.sender == contractOwner,"needs to be called by owner");
+        require(isApprovedForAll(to, msg.sender) == true,"caller needs to be Approved");
         // TODO add 'to' address to token approvals
         _tokenApprovals.push(to);
         // TODO emit Approval Event
@@ -232,10 +232,12 @@ contract ERC721 is Pausable, ERC165 {
     function _mint(address to, uint256 tokenId) internal {
 
         // TODO revert if given tokenId already exists or given address is invalid
-  
+        require(_exists(tokenId) || to!= address(0));
         // TODO mint tokenId to given address & increase token count of owner
-
+        _tokenOwner[tokenId] = to;
+        _ownedTokensCount[to].increment();
         // TODO emit Transfer event
+        emit Transfer(address(0), to, tokenId);
     }
 
     // @dev Internal function to transfer ownership of a given token ID to another address.
@@ -243,14 +245,16 @@ contract ERC721 is Pausable, ERC165 {
     function _transferFrom(address from, address to, uint256 tokenId) internal {
 
         // TODO: require from address is the owner of the given token
-
+        require(from == ownerOf(tokenId),"must be token owner");
         // TODO: require token is being transfered to valid address
-        
+        require(to != address(0),"must be transfered to valid address");
         // TODO: clear approval
-
+        delete(_tokenApprovals[tokenId]);
         // TODO: update token counts & transfer ownership of the token ID 
-
+        _ownedTokensCount.increment();
+        transferFrom(from, to, tokenId);
         // TODO: emit correct event
+    
     }
 
     /**
@@ -456,9 +460,11 @@ contract ERC721Enumerable is ERC165, ERC721 {
 contract ERC721Metadata is ERC721Enumerable, usingOraclize {
     
     // TODO: Create private vars for token _name, _symbol, and _baseTokenURI (string)
-
+    string private _name;
+    string private _symbol;
+    string private _baseTokenURI;
     // TODO: create private mapping of tokenId's to token uri's called '_tokenURIs'
-
+    mapping (uint256 => string) private _tokenURIs;
     bytes4 private constant _INTERFACE_ID_ERC721_METADATA = 0x5b5e139f;
     /*
      * 0x5b5e139f ===
@@ -470,12 +476,22 @@ contract ERC721Metadata is ERC721Enumerable, usingOraclize {
 
     constructor (string memory name, string memory symbol, string memory baseTokenURI) public {
         // TODO: set instance var values
-
+        _name = name;
+        _symbol = symbol;
+        _baseTokenURI = baseTokenURI;
         _registerInterface(_INTERFACE_ID_ERC721_METADATA);
     }
 
     // TODO: create external getter functions for name, symbol, and baseTokenURI
-
+    function getName()external{
+        return _name;
+    }
+     function getSymbol()external{
+        return _symbol;
+    }
+     function getBaseTokenURI()external{
+        return _baseTokenURI;
+    }
     function tokenURI(uint256 tokenId) external view returns (string memory) {
         require(_exists(tokenId));
         return _tokenURIs[tokenId];
@@ -483,11 +499,18 @@ contract ERC721Metadata is ERC721Enumerable, usingOraclize {
 
 
     // TODO: Create an internal function to set the tokenURI of a specified tokenId
-    // It should be the _baseTokenURI + the tokenId in string form
-    // TIP #1: use strConcat() from the imported oraclizeAPI lib to set the complete token URI
-    // TIP #2: you can also use uint2str() to convert a uint to a string
+    function setTokenURI(uint256 tokenId)internal{
+         // It should be the _baseTokenURI + the tokenId in string form
+        // TIP #1: use strConcat() from the imported oraclizeAPI lib to set the complete token URI
+        // TIP #2: you can also use uint2str() to convert a uint to a string
         // see https://github.com/oraclize/ethereum-api/blob/master/oraclizeAPI_0.5.sol for strConcat()
-    // require the token exists before setting
+         // require the token exists before setting
+        string memory _tokenId = uint2str(tokenId);
+        string memory _tokenURI = strConcat(_baseTokenURI, _tokenId);
+        _tokenURIs.push(_tokenURI);
+    }
+
+   
 
 }
 
