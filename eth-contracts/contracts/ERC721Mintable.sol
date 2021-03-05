@@ -158,7 +158,7 @@ contract ERC721 is Pausable, ERC165 {
         require(msg.sender == contractOwner,"needs to be called by owner");
         require(isApprovedForAll(to, msg.sender) == true,"caller needs to be Approved");
         // TODO add 'to' address to token approvals
-        _tokenApprovals.push(to);
+         _tokenApprovals[tokenId] = to;
         // TODO emit Approval Event
         emit Approval(tokenOwner, to, tokenId);
     }
@@ -251,7 +251,7 @@ contract ERC721 is Pausable, ERC165 {
         // TODO: clear approval
         delete(_tokenApprovals[tokenId]);
         // TODO: update token counts & transfer ownership of the token ID 
-        _ownedTokensCount.increment();
+        _ownedTokensCount[to].increment();
         transferFrom(from, to, tokenId);
         // TODO: emit correct event
     
@@ -483,13 +483,13 @@ contract ERC721Metadata is ERC721Enumerable, usingOraclize {
     }
 
     // TODO: create external getter functions for name, symbol, and baseTokenURI
-    function getName()external{
+    function getName()external returns(string memory){
         return _name;
     }
-     function getSymbol()external{
+     function getSymbol()external returns(string memory){
         return _symbol;
     }
-     function getBaseTokenURI()external{
+     function getBaseTokenURI()external returns(string memory) {
         return _baseTokenURI;
     }
     function tokenURI(uint256 tokenId) external view returns (string memory) {
@@ -507,7 +507,7 @@ contract ERC721Metadata is ERC721Enumerable, usingOraclize {
          // require the token exists before setting
         string memory _tokenId = uint2str(tokenId);
         string memory _tokenURI = strConcat(_baseTokenURI, _tokenId);
-        _tokenURIs.push(_tokenURI);
+        _tokenURIs[tokenId] = _tokenURI;
     }
 
    
@@ -522,6 +522,16 @@ contract ERC721Metadata is ERC721Enumerable, usingOraclize {
 //      -takes in a 'to' address, tokenId, and tokenURI as parameters
 //      -returns a true boolean upon completion of the function
 //      -calls the superclass mint and setTokenURI functions
+contract KruegerERC721 is ERC721Metadata {
+       string private baseURI = "https://s3-us-west-2.amazonaws.com/udacity-blockchain/capstone/";
+    constructor (string memory name, string memory symbol) ERC721Metadata(name, symbol, baseURI) public {
 
+    }
+    function mint(address to, uint256 tokenId) public onlyOwner returns (bool) {
+        super._mint(to, tokenId);
+        setTokenURI(tokenId);
+        return true;
+    }
+}
 
 
