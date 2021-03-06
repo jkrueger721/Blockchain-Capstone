@@ -11,7 +11,7 @@ contract Ownable {
     //  1) create a private '_owner' variable of type address with a public getter function
     address private _owner;
     //  2) create an internal constructor that sets the _owner var to the creater of the contract 
-    function getOwner()public returns(address){
+    function getOwner()public view returns(address){
         return _owner;
     }
     constructor() internal{
@@ -483,13 +483,13 @@ contract ERC721Metadata is ERC721Enumerable, usingOraclize {
     }
 
     // TODO: create external getter functions for name, symbol, and baseTokenURI
-    function getName()external returns(string memory){
+    function getName()external view returns(string memory){
         return _name;
     }
-     function getSymbol()external returns(string memory){
+     function getSymbol()external view returns(string memory){
         return _symbol;
     }
-     function getBaseTokenURI()external returns(string memory) {
+     function getBaseTokenURI()external view returns(string memory) {
         return _baseTokenURI;
     }
     function tokenURI(uint256 tokenId) external view returns (string memory) {
