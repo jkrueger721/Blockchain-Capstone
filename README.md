@@ -6,7 +6,7 @@ The capstone will build upon the knowledge you have gained in the course in orde
 
 Run this command in separate terminal window
 
-`npx ganache-cli -m "candy maple cake sugar pudding cream honey rich smooth crumble sweet treat"`
+`ganache-cli -m "trial picture drama face slogan elegant throw town silent excuse viable sadness"`
 
 ## Run truffle tests:
 
@@ -23,12 +23,6 @@ Run this command in separate terminal window
 ## Deploy contracts to Rinkeby network
 
 Commands:
-
-`export INFURA_KEY="<your_infura_key>"`
-
-`export MNEMONIC="<metamask>"`
-
-`export NETWORK="rinkeby"`
 
 `truffle deploy --network rinkeby`
 
