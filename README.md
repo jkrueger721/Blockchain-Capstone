@@ -674,7 +674,7 @@ SolnSquareVerifier Contract ABI
 
 Tokens minted with [myetherwallet tool](https://www.myetherwallet.com/interface/interact-with-contract)
 
-OpenSea Rinkeby marketplace [link](https://testnets.opensea.io/assets/0x79452a7512f5063266e0b922a354c589ff32ee0d)
+OpenSea Rinkeby marketplace [link](https://testnets.opensea.io/collection/unidentified-contract-gjh084s9ip)
 
 # Project Resources
 
