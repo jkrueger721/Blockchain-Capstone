@@ -19,7 +19,7 @@
  */
 
 const HDWalletProvider = require('truffle-hdwallet-provider');
-const infuraKey = "49e069ced9314a6ea21b823c839321cd";
+const infuraKey = "c877df676209414b8661bca014018fe6";
 //
 const fs = require('fs');
 const mnemonic = fs.readFileSync("mnemonic.txt").toString().trim();
@@ -49,10 +49,11 @@ module.exports = {
      },   
      
      rinkeby: {
-      provider: () => new HDWalletProvider(mnemonic, `https://rinkeby.infura.io/v3/{infuraKey}`),
+      provider: () => new HDWalletProvider(mnemonic, `https://rinkeby.infura.io/v3/` + infuraKey ),
       network_id: 4,
       gas: 9000000,
       gasPrice: 21000000000
+      // networkCheckTimeout: 10000000
      }
     
   },
